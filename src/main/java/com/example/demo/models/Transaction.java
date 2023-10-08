@@ -1,47 +1,30 @@
 package com.example.demo.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@NoArgsConstructor
 public class Transaction {
-    private int id;
-    private int ownerId;
-    private int targetId;
-    private int amount;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long targetId;
+    private Double amount;
+    private Status status;
 
-    public Transaction(int id, int ownerId, int targetId, int amount) {
-        this.id = id;
-        this.ownerId = ownerId;
+    public Transaction(Long targetId, Double amount) {
         this.targetId = targetId;
         this.amount = amount;
+        this.status = Status.IN_PROGRESS;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(int ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public int getTargetId() {
-        return targetId;
-    }
-
-    public void setTargetId(int targetId) {
-        this.targetId = targetId;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
