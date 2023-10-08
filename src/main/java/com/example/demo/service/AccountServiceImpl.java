@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -57,21 +58,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Status withdraw(Long toId, String pinCode, Double amount) {
-        Transaction transaction = new Transaction(toId, -amount);
+    public Status withdraw(Long fromId, String pinCode, Double amount) {
+        Transaction transaction = new Transaction(fromId, -amount);
         try{
-            BankAccount account = repository.findById(toId).orElseThrow();
+            BankAccount account = repository.findById(fromId).orElseThrow();
             if (account.getPinCode().equals(pinCode) && account.getCurrentBalance() >= amount){
                 account.setCurrentBalance(account.getCurrentBalance() - amount);
                 transaction.setStatus(Status.APPROVED);
                 transactionRepository.save(transaction);
-                account.getTransactions().add(transaction);
                 repository.save(account);
             }else {
-                System.out.println("not enough money");
+                System.out.println("not enough money or wrong PIN");
                 transaction.setStatus(Status.DECLINE);
                 transactionRepository.save(transaction);
             }
+            account.getTransactions().add(transaction);
+            repository.save(account);
         }catch (NoSuchElementException ex){
             System.out.println(ex.getMessage());
             transaction.setStatus(Status.DECLINE);
@@ -82,10 +84,18 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Status transfer(Long fromId, Long toId, String pinCode, Double amount) {
-        if (repository.findById(toId).isPresent() && withdraw(fromId, pinCode, amount) == Status.APPROVED){
-            return deposit(toId, amount);
-        }else {
-            return Status.DECLINE;
+        Optional<BankAccount> fromAccount = repository.findById(fromId);
+        Optional<BankAccount> toAccount = repository.findById(fromId);
+        if (fromAccount.isPresent() && toAccount.isPresent()){
+            if (withdraw(fromId, pinCode, amount) == Status.APPROVED){
+                return deposit(toId, amount);
+            }
         }
+        return Status.DECLINE;
+    }
+
+    @Override
+    public List<Transaction> getTransactions(Long accountNumber) {
+        return repository.findById(accountNumber).orElseThrow().getTransactions();
     }
 }

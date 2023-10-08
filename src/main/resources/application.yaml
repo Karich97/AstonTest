@@ -1,0 +1,23 @@
+server:
+  port: 9191
+
+spring:
+  application:
+    name: demo-service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:${DATABASE_URL:postgresql://localhost:5432/postgres}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog.xml

@@ -42,17 +42,17 @@ public class AccountController {
         return account.getTransactions();
     }
 
-    @PostMapping("/account/transaction/deposit")
+    @PostMapping("/transaction/deposit")
     public Status deposit(@RequestBody TransactionRequest transactionRequest) {
         return service.deposit(transactionRequest.getToId(), transactionRequest.getAmount());
     }
 
-    @PostMapping("/account/transaction/withdraw")
+    @PostMapping("/transaction/withdraw")
     public Status withdraw(@RequestBody TransactionRequest transactionRequest) {
-        return service.withdraw(transactionRequest.getToId(), transactionRequest.getPinCode(), transactionRequest.getAmount());
+        return service.withdraw(transactionRequest.getFromId(), transactionRequest.getPinCode(), transactionRequest.getAmount());
     }
 
-    @PostMapping("/account/transaction/transfer")
+    @PostMapping("/transaction/transfer")
     public Status transfer(@RequestBody TransactionRequest transactionRequest) {
         return service.transfer(transactionRequest.getFromId(), transactionRequest.getToId(), transactionRequest.getPinCode(), transactionRequest.getAmount());
     }
