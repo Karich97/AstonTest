@@ -1,12 +1,15 @@
 package com.example.demo;
 
 import com.example.demo.models.BankAccount;
+import com.example.demo.models.Status;
 import com.example.demo.models.Transaction;
 import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.TransactionRepository;
 import com.example.demo.service.AccountServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
@@ -14,109 +17,108 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+
 
 @SpringBootTest
 class DemoApplicationTests {
-
 	@Mock
 	private AccountRepository accountRepository;
-
+	@Mock
+	private TransactionRepository transactionRepository;
 	@InjectMocks
-	private AccountServiceImpl service;
+	private AccountServiceImpl accountService;
 
 	@Test
-	public void testCreateAccount() {
-		String beneficiaryName = "John Doe";
-		String pinCode = "1234";
-		BankAccount account = new BankAccount(beneficiaryName, pinCode);
-		when(accountRepository.save(account)).thenReturn(account);
+	public void testFindAll() {
+		List<BankAccount> accounts = new ArrayList<>();
+		accounts.add(new BankAccount("Ivan Ivanov", "1111"));
+		accounts.add(new BankAccount("Petr Petrov", "2222"));
+		Mockito.when(accountRepository.findAll()).thenReturn(accounts);
 
-		Long createdAccountId = service.createNewAccount(beneficiaryName, pinCode);
+		List<BankAccount> result = accountService.findAll();
 
-		assertEquals(beneficiaryName, accountRepository.findById(createdAccountId).orElseThrow().getOwnerName());
-		assertEquals(pinCode, accountRepository.findById(createdAccountId).orElseThrow().getPinCode());
+		assertEquals(accounts, result);
+	}
+
+	@Test
+	public void testFindById() {
+		BankAccount account = new BankAccount("Ivan Ivanov", "1111");
+		Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+
+		BankAccount result = accountService.findById(1L);
+
+		assertEquals(account, result);
+	}
+
+	@Test
+	public void testCreateNewAccount() {
+		BankAccount account = new BankAccount("Ivan Ivanov", "1111");
+		Mockito.when(accountRepository.save(account)).thenReturn(account);
+
+		Long result = accountService.createNewAccount("Ivan Ivanov", "1111");
+
+		assertEquals(account.getId(), result);
 	}
 
 	@Test
 	public void testDeposit() {
-		Long accountNumber = 123456789L;
-		String pinCode = "1234";
-		double amount = 100.0;
-		BankAccount account = new BankAccount("John Doe", pinCode);
-		account.setId(accountNumber);
-		account.setCurrentBalance(0.0);
-		when(accountRepository.findById(accountNumber)).thenReturn(Optional.of(account));
+		BankAccount account = new BankAccount("Ivan Ivanov", "1111");
+		account.setCurrentBalance(1000.0);
+		Transaction transaction = new Transaction(1L, 500.0);
+		Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
 
-		service.deposit(accountNumber, amount);
+		Status result = accountService.deposit(1L, 500.0);
 
-		assertEquals(amount, account.getCurrentBalance());
+		assertEquals(Status.APPROVED, result);
+		assertEquals(1500.0, account.getCurrentBalance(), 0.0);
 	}
 
 	@Test
 	public void testWithdraw() {
-		Long accountNumber = 123456789L;
-		String pinCode = "1234";
-		double initialBalance = 100.0;
-		double withdrawAmount = 50.0;
-		BankAccount account = new BankAccount("John Doe", pinCode);
-		account.setId(accountNumber);
-		account.setCurrentBalance(initialBalance);
-		when(accountRepository.findById(accountNumber)).thenReturn(Optional.of(account));
+		BankAccount account = new BankAccount("Ivan Ivanov", "1111");
+		account.setCurrentBalance(1000.0);
+		Transaction transaction = new Transaction(1L, -500.0);
+		Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
 
-		service.withdraw(accountNumber, pinCode, withdrawAmount);
+		Status result = accountService.withdraw(1L, "1111", 500.0);
 
-		assertEquals(initialBalance - withdrawAmount, account.getCurrentBalance());
+		assertEquals(Status.APPROVED, result);
+		assertEquals(500.0, account.getCurrentBalance(), 0.0);
 	}
 
 	@Test
 	public void testTransfer() {
-		Long toAccountNumber = 123456789L;
-		Long fromAccountNumber = 987654321L;
-		String pinCode = "1234";
-		double initialBalance = 100.0;
-		double transferAmount = 50.0;
-		BankAccount fromAccount = new BankAccount("John Doe", pinCode);
-		fromAccount.setId(fromAccountNumber);
-		fromAccount.setCurrentBalance(initialBalance);
-		BankAccount toAccount = new BankAccount("Jane Smith", pinCode);
-		toAccount.setId(toAccountNumber);
-		toAccount.setCurrentBalance(0.0);
-		when(accountRepository.findById(fromAccountNumber)).thenReturn(Optional.of(fromAccount));
-		when(accountRepository.findById(toAccountNumber)).thenReturn(Optional.of(toAccount));
+		BankAccount fromAccount = new BankAccount("Ivan Ivanov", "1111");
+		fromAccount.setCurrentBalance(1000.0);
+		BankAccount toAccount = new BankAccount("Petr Petrov", "2222");
+		Transaction transaction = new Transaction(1L, -500.0);
+		Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.of(fromAccount));
+		Mockito.when(accountRepository.findById(2L)).thenReturn(Optional.of(toAccount));
+		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
 
-		service.transfer(fromAccountNumber, toAccountNumber, pinCode, transferAmount);
+		Status result = accountService.transfer(1L, 2L, "1111", 500.0);
 
-		assertEquals(initialBalance - transferAmount, fromAccount.getCurrentBalance());
-		assertEquals(transferAmount, toAccount.getCurrentBalance());
-	}
-
-	@Test
-	public void testGetAllAccounts() {
-		List<BankAccount> accounts = new ArrayList<>();
-		accounts.add(new BankAccount("John Doe", "1234"));
-		accounts.add(new BankAccount("Jane Smith", "5678"));
-		when(accountRepository.findAll()).thenReturn(accounts);
-
-		List<BankAccount> retrievedAccounts = service.findAll();
-
-		assertEquals(accounts.size(), retrievedAccounts.size());
+		assertEquals(Status.APPROVED, result);
+		assertEquals(500.0, fromAccount.getCurrentBalance(), 0.0);
+		assertEquals(500.0, toAccount.getCurrentBalance(), 0.0);
 	}
 
 	@Test
 	public void testGetTransactions() {
-		Long accountNumber = 123456789L;
+		BankAccount account = new BankAccount("Ivan Ivanov", "1111");
+		Transaction transaction1 = new Transaction(1L, 500.0);
+		Transaction transaction2 = new Transaction(1L, -200.0);
 		List<Transaction> transactions = new ArrayList<>();
-		transactions.add(new Transaction(accountNumber, 100.0));
-		transactions.add(new Transaction(123456789L, 50.0));
-		BankAccount account = new BankAccount("John Doe", "1234");
-		account.setId(accountNumber);
+		transactions.add(transaction1);
+		transactions.add(transaction2);
 		account.setTransactions(transactions);
-		when(accountRepository.findById(accountNumber)).thenReturn(Optional.of(account));
+		Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
 
-		List<Transaction> retrievedTransactions = service.getTransactions(accountNumber);
+		List<Transaction> result = accountService.getTransactions(1L);
 
-		assertEquals(transactions.size(), retrievedTransactions.size());
+		assertEquals(transactions, result);
 	}
 
 }

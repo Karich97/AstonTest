@@ -8,6 +8,7 @@ import com.example.demo.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -96,6 +97,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Transaction> getTransactions(Long accountNumber) {
-        return repository.findById(accountNumber).orElseThrow().getTransactions();
+        List<Transaction> transactionList = new ArrayList<>();
+        try {
+            transactionList = repository.findById(accountNumber).orElseThrow().getTransactions();
+        }catch (NoSuchElementException ex){
+            System.out.println(ex.getMessage());
+        }
+        return transactionList;
     }
 }

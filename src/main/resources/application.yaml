@@ -13,11 +13,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
     show-sql: false
 
   liquibase:
-    change-log: classpath:db/changelog/db.changelog.xml
+    change-log: classpath:db/changelog/db.changelog.yml
