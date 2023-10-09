@@ -14,37 +14,37 @@ Technologies:
 API Usage:
 
 1) Get a list of all accounts
-  GET /account
+  GET /accounts
   Returns a list of all bank accounts.
 
 2) Create a new account
-  POST /account/new
+  POST /accounts/account
   Creates a new bank account
   Returns id of new acount.
 
 4) Get information about an account by ID
-  GET /account/{id}
+  GET /accounts/{id}
   Search account by it's id
   Returns information in JSON format if it's exists or NotFound.
   
 
 6) Get a list of transactions by account ID
-  GET /account/{id}/transaction
+  GET /transactions/{id}
   Search for a list of transactions for a bank account by its ID
   Returns information in JSON format if it's exists or NotFound.
 
 8) Deposit funds into an account
-  PUT /account/transaction/deposit
+  PUT /transactions/deposit
   Deposits the specified amount into a bank account
   Returns status of transaction.
 
 10) Withdraw funds from an account
-  PUT /account/transaction/withdraw
+  PUT /transactions/withdraw
   Withdraws the specified amount from a bank account
   Returns status of transaction.
 
 12) Transfer funds between accounts
-  PUT /account/transaction/transfer
+  PUT /transactions/transfer
   Transfers the specified amount from the sender's account to the recipient's account
   Returns status of transaction.
 
@@ -61,29 +61,29 @@ API Usage:
 Использование API:
 
 1) Получение списка всех счетов
-  GET /account
+  GET /accounts
   Возвращает список всех банковских счетов.
 
 2) Создание нового счета
-  POST /account/new
+  POST /accounts/account
   Создает новый банковский счет.
 
 3) Получение информации о счете по ID
-  GET /account/{id}
+  GET /accounts/{id}
   Возвращает информацию о банковском счете по его ID.
 
 4) Получение списка транзакций по ID счета
-  GET /account/{id}/transaction
+  GET /transactions/{id}
   Возвращает список транзакций для банковского счета по его ID.
 
 5) Пополнение счета
-  PUT /account/transaction/deposit
+  PUT /transactions/deposit
   Пополняет банковский счет на указанную сумму.
 
 6) Снятие со счета
-  PUT /account/transaction/withdraw
+  PUT /transactions/withdraw
   Снимает со счета указанную сумму.
 
 7) Перевод между счетами
-  PUT /account/transaction/transfer
+  PUT /transactions/transfer
   Переводит указанную сумму со счета отправителя на счет получателя.
