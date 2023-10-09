@@ -6,6 +6,7 @@ import com.example.demo.models.Transaction;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.TransactionRepository;
 import com.example.demo.service.AccountServiceImpl;
+import com.example.demo.service.TransactionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,6 +28,8 @@ class DemoApplicationTests {
 	private TransactionRepository transactionRepository;
 	@InjectMocks
 	private AccountServiceImpl accountService;
+	@InjectMocks
+	private TransactionServiceImpl transactionService;
 
 	@Test
 	public void testFindAll() {
@@ -68,7 +71,7 @@ class DemoApplicationTests {
 		Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
 		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
 
-		Status result = accountService.deposit(1L, 500.0);
+		Status result = transactionService.deposit(1L, 500.0);
 
 		assertEquals(Status.APPROVED, result);
 		assertEquals(1500.0, account.getCurrentBalance(), 0.0);
@@ -82,7 +85,7 @@ class DemoApplicationTests {
 		Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
 		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
 
-		Status result = accountService.withdraw(1L, "1111", 500.0);
+		Status result = transactionService.withdraw(1L, "1111", 500.0);
 
 		assertEquals(Status.APPROVED, result);
 		assertEquals(500.0, account.getCurrentBalance(), 0.0);
@@ -98,7 +101,7 @@ class DemoApplicationTests {
 		Mockito.when(accountRepository.findById(2L)).thenReturn(Optional.of(toAccount));
 		Mockito.when(transactionRepository.save(transaction)).thenReturn(transaction);
 
-		Status result = accountService.transfer(1L, 2L, "1111", 500.0);
+		Status result = transactionService.transfer(1L, 2L, "1111", 500.0);
 
 		assertEquals(Status.APPROVED, result);
 		assertEquals(500.0, fromAccount.getCurrentBalance(), 0.0);
@@ -116,7 +119,7 @@ class DemoApplicationTests {
 		account.setTransactions(transactions);
 		Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
 
-		List<Transaction> result = accountService.getTransactions(1L);
+		List<Transaction> result = transactionService.getTransactions(1L);
 
 		assertEquals(transactions, result);
 	}
