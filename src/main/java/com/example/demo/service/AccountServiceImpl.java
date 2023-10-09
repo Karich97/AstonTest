@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.models.BankAccount;
 import com.example.demo.models.Status;
 import com.example.demo.models.Transaction;
@@ -8,7 +9,6 @@ import com.example.demo.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BankAccount findById(Long id) {
-        return repository.findById(id).orElseThrow();
+        return repository.findById(id).orElseThrow(NotFoundException::new);
     }
 
     @Override
@@ -97,12 +97,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Transaction> getTransactions(Long accountNumber) {
-        List<Transaction> transactionList = new ArrayList<>();
-        try {
-            transactionList = repository.findById(accountNumber).orElseThrow().getTransactions();
-        }catch (NoSuchElementException ex){
-            System.out.println(ex.getMessage());
-        }
-        return transactionList;
+        return repository.findById(accountNumber).orElseThrow(NotFoundException::new).getTransactions();
     }
 }
