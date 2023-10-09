@@ -19,27 +19,34 @@ API Usage:
 
 2) Create a new account
   POST /account/new
-  Creates a new bank account.
+  Creates a new bank account
+  Returns id of new acount.
 
-3) Get information about an account by ID
+4) Get information about an account by ID
   GET /account/{id}
-  Returns information about a bank account by its ID.
+  Search account by it's id
+  Returns information in JSON format if it's exists or NotFound.
+  
 
-4) Get a list of transactions by account ID
+6) Get a list of transactions by account ID
   GET /account/{id}/transaction
-  Returns a list of transactions for a bank account by its ID.
+  Search for a list of transactions for a bank account by its ID
+  Returns information in JSON format if it's exists or NotFound.
 
-5) Deposit funds into an account
+8) Deposit funds into an account
   PUT /account/transaction/deposit
-  Deposits the specified amount into a bank account.
+  Deposits the specified amount into a bank account
+  Returns status of transaction.
 
-6) Withdraw funds from an account
+10) Withdraw funds from an account
   PUT /account/transaction/withdraw
-  Withdraws the specified amount from a bank account.
+  Withdraws the specified amount from a bank account
+  Returns status of transaction.
 
-7) Transfer funds between accounts
+12) Transfer funds between accounts
   PUT /account/transaction/transfer
-  Transfers the specified amount from the sender's account to the recipient's account.
+  Transfers the specified amount from the sender's account to the recipient's account
+  Returns status of transaction.
 
 #RU
 Описание API для работы с банковскими счетами:
