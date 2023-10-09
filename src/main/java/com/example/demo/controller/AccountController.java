@@ -10,20 +10,21 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/accounts")
 public class AccountController {
     private final AccountService service;
 
-    @GetMapping("accounts")
+    @GetMapping
     public List<BankAccount> getAllAccounts(){
         return service.findAll();
     }
 
-    @PostMapping("account")
+    @PostMapping("/account")
     public Long createNewAccount(@RequestBody RequestAccount requestAccount){
         return service.createNewAccount(requestAccount.getOwnerName(), requestAccount.getPinCode());
     }
 
-    @GetMapping("accounts/{id}")
+    @GetMapping("/{id}")
     public BankAccount getAccountById(@PathVariable Long id){
         return service.findById(id);
     }
